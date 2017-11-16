@@ -366,11 +366,11 @@ def cal_sort_key( cal ):
 
 @app.route('/list_events', methods=['POST'])
 def list_events():
+  #Despite the possibly misleading function name, this function serves only to
+  #get the calendar ids of the calendars whose checkboxes were filled prior to user submission
+  #using the submit button. The result, stored in a session variable, is 
   flask.session["selected"] = request.form.getlist("calcheck")
   
-  
-
-
   return flask.redirect(flask.url_for("choose2"))
   #return flask.redirect("index.html")
 
@@ -380,22 +380,61 @@ def get_events(service):
 
   cal_list = flask.session["selected"]
   eve_list = []
+  starttime = arrow.get(flask.session['begin_time']).time().isoformat()
+  endtime = arrow.get(flask.session['end_time']).time().isoformat()
+  begin_date = flask.session["begin_date"]
+  end_date = flask.session["end_date"]
+  startdate = begin_date[:11] + starttime + begin_date[19:]
+  enddate = end_date[:11] + endtime + end_date[19:]
+  app.logger.debug("DATES {}, {}".format(startdate, enddate))
+  
 
   for ids in cal_list:
     events = service.events().list(calendarId=ids).execute()["items"]
-    eve_list.append(events)
+    #eve_list.append(events)
     # app.logger.debug("calendar events")
+    
+    result = cmp_times(events, startdate, enddate)
+    eve_list.append(
+      {
+        "id": ids,
+        "events": result
+      })
 
     # app.logger.debug(events)
     # eve_list.append(events)
-    app.logger.debug(eve_list)
+  app.logger.debug(eve_list)
 
 
 
 
   return eve_list
 
-  def cmp_times()
+def cmp_times(events, starttime, endtime):
+  busylist = []
+  for event in events:
+    if "transparency" not in event:
+      if "date" in event["start"]:
+        summary = event["summary"]
+        eventBegin = event["start"]["date"] + "00:00:00" + starttime[19:]
+        eventEnd = event["end"]["date"] + "23:59:00" + endtime[19:]
+
+
+      else:
+        summary = event["summary"]
+        eventBegin = event["start"]["dateTime"]
+        eventEnd = event["end"]["dateTime"]
+
+      r1 = (eventBegin < starttime) and (eventEnd < endtime)
+      r2 = (eventBegin < starttime) and (eventEnd > starttime)
+      r3 = (eventBegin < endtime) and (eventEnd > endtime)
+
+      if (r1 or r2 or r3):
+        event = {"sum":summary, "start":eventBegin, "end": eventEnd}
+        busylist.append(event)
+
+
+  return busylist
 
 
 
