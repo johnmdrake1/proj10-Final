@@ -56,12 +56,12 @@
 <h2>Date range</h2>
   <form action="/setrange" method="post">
     Start time:
-    <input type="time" name="start_clock">
+    <input type="time" name="start_clock" value="00:00:00">
 
   </select>
 
     End time:
-    <input type="time" name="end_clock">
+    <input type="time" name="end_clock" value="00:00:00">
 
   
   <input type="text" name="daterange" size="12"
@@ -99,21 +99,28 @@
     -->
 <form action="/list_events" method="post">
 {% if g.calendars is defined  %}
-  <div class="row">
   {% for cal in g.calendars if cal.selected %}
-          <div class="col-md-4">
+        <div class="col-md-4">
 	   {{ cal.summary }} <input type="checkbox" name="calcheck" value={{cal.id}} /> 
           </div>
-         {% if loop.index is divisibleby 3 %}
-          </div> <div class="row">
+         {% if loop.index is divisibleby 1 %}
+         <div class="row">
+            {% if g.events is defined %}
+              {% for event in g.events %}
+                {% if event.id == cal.id %}
+                  {% for key in event.events %}
+                    {{ key.sum }}  Start: {{ key.start | fmtdate }} {{ key.start | fmttime }}  End: {{ key.end | fmtdate }} {{key.end | fmttime}}
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+            {% endif %}
          {% endif %}
   {% endfor %}
-
   <input type="submit" value="Submit">
+</div>
 
+  
 
-
-  </div>
 {% endif %}
 
 </form>
