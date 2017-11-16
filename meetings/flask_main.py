@@ -67,7 +67,27 @@ def choose():
     gcal_service = get_gcal_service(credentials)
     app.logger.debug("Returned from get_gcal_service")
     flask.g.calendars = list_calendars(gcal_service)
+    #list_events(gcal_service)
     return render_template('index.html')
+
+@app.route("/choose2")
+def choose2():
+    ## We'll need authorization to list calendars 
+    ## I wanted to put what follows into a function, but had
+    ## to pull it back here because the redirect has to be a
+    ## 'return' 
+    app.logger.debug("Checking credentials for Google calendar access")
+    credentials = valid_credentials()
+    if not credentials:
+      app.logger.debug("Redirecting to authorization")
+      return flask.redirect(flask.url_for('oauth2callback'))
+
+    gcal_service = get_gcal_service(credentials)
+    app.logger.debug("Returned from get_gcal_service")
+    flask.g.events = get_events(gcal_service)
+    #list_events(gcal_service)
+    return render_template('index.html')
+
 
 ####
 #
@@ -191,11 +211,17 @@ def setrange():
     User chose a date range with the bootstrap daterange
     widget.
     """
+
+
+
+
     app.logger.debug("Entering setrange")  
     flask.flash("Setrange gave us '{}'".format(
       request.form.get('daterange')))
     daterange = request.form.get('daterange')
     flask.session['daterange'] = daterange
+    start_clock = request.form.get('start_clock')
+    end_clock = request.form.get('end_clock')
     daterange_parts = daterange.split()
     flask.session['begin_date'] = interpret_date(daterange_parts[0])
     flask.session['end_date'] = interpret_date(daterange_parts[2])
@@ -318,6 +344,10 @@ def list_calendars(service):
     return sorted(result, key=cal_sort_key)
 
 
+
+    
+
+
 def cal_sort_key( cal ):
     """
     Sort key for the list of calendars:  primary calendar first,
@@ -333,6 +363,51 @@ def cal_sort_key( cal ):
     else:
        primary_key = "X"
     return (primary_key, selected_key, cal["summary"])
+
+@app.route('/list_events', methods=['POST'])
+def list_events():
+  flask.session["selected"] = request.form.getlist("calcheck")
+  
+  
+
+
+  return flask.redirect(flask.url_for("choose2"))
+  #return flask.redirect("index.html")
+
+
+def get_events(service):
+
+
+  cal_list = flask.session["selected"]
+  eve_list = []
+
+  for ids in cal_list:
+    events = service.events().list(calendarId=ids).execute()["items"]
+    eve_list.append(events)
+    # app.logger.debug("calendar events")
+
+    # app.logger.debug(events)
+    # eve_list.append(events)
+    app.logger.debug(eve_list)
+
+
+
+
+  return eve_list
+
+  def cmp_times()
+
+
+
+
+  
+  
+
+  
+
+
+
+
 
 
 #################
