@@ -428,7 +428,7 @@ def cmp_times(events, starttime, endtime):
         eventBegin = event["start"]["dateTime"]
         eventEnd = event["end"]["dateTime"]
 
-      r1 = (eventBegin < starttime) and (eventEnd < endtime)
+      r1 = (eventBegin >= starttime) and (eventEnd < endtime)
       r2 = (eventBegin < starttime) and (eventEnd > starttime)
       r3 = (eventBegin < endtime) and (eventEnd > endtime)
 
