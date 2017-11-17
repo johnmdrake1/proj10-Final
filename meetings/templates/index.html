@@ -98,6 +98,8 @@
     prefer down then across). 
     -->
 <form action="/list_events" method="post">
+  <!-- Trying to get the form submit button out of the way -->
+  <input type="submit" value="Submit">
 {% if g.calendars is defined  %}
   {% for cal in g.calendars if cal.selected %}
         <div class="col-md-4">
@@ -116,12 +118,18 @@
             {% endif %}
          {% endif %}
   {% endfor %}
-  <input type="submit" value="Submit">
+  
 </div>
 
-  
+
+
+
+
+
 
 {% endif %}
+
+
 
 </form>
     
