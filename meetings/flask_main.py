@@ -413,6 +413,8 @@ def get_events(service):
 
 def cmp_times(events, starttime, endtime):
   busylist = []
+  if events==[]:
+    return "no events"
   for event in events:
     if "transparency" not in event:
       if "date" in event["start"]:
