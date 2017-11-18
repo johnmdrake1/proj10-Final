@@ -99,18 +99,23 @@
     -->
 <form action="/list_events" method="post">
   <!-- Trying to get the form submit button out of the way -->
+  <!-- Submit button for once checkboxes have been checked -->
   <input type="submit" value="Submit">
 {% if g.calendars is defined  %}
   {% for cal in g.calendars if cal.selected %}
         <div class="col-md-4">
+          <!-- Checkboxes for each calendar, right next to their names so calendars can be selected to display busy times for. Values aren't submitted
+          until submit button above is pressed -->
 	   {{ cal.summary }} <input type="checkbox" name="calcheck" value={{cal.id}} /> 
           </div>
          {% if loop.index is divisibleby 1 %}
          <div class="row">
+          <!-- Displays events properly -->
             {% if g.events is defined %}
               {% for event in g.events %}
                 {% if event.id == cal.id %}
                   {% for key in event.events %}
+                  <!-- How the events are displayed on the webpage -->
                     {{ key.sum }}  Start: {{ key.start | fmtdate }} {{ key.start | fmttime }}  End: {{ key.end | fmtdate }} {{key.end | fmttime}}
                   {% endfor %}
                 {% endif %}

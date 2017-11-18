@@ -67,15 +67,13 @@ def choose():
     gcal_service = get_gcal_service(credentials)
     app.logger.debug("Returned from get_gcal_service")
     flask.g.calendars = list_calendars(gcal_service)
-    #list_events(gcal_service)
+    
     return render_template('index.html')
 
 @app.route("/choose2")
 def choose2():
-    ## We'll need authorization to list calendars 
-    ## I wanted to put what follows into a function, but had
-    ## to pull it back here because the redirect has to be a
-    ## 'return' 
+    # Same as choose, but calls get_events instead of list_calendars. This is so the events can
+    # be listed on index.html instead of being redirected to a new page. 
     app.logger.debug("Checking credentials for Google calendar access")
     credentials = valid_credentials()
     if not credentials:
@@ -86,7 +84,7 @@ def choose2():
     app.logger.debug("Returned from get_gcal_service")
     flask.g.calendars = list_calendars(gcal_service)
     flask.g.events = get_events(gcal_service)
-    #list_events(gcal_service)
+    
     return render_template('index.html')
 
 
@@ -252,6 +250,7 @@ def init_session_values():
         tomorrow.format("MM/DD/YYYY"),
         nextweek.format("MM/DD/YYYY"))
     # Default time span each day, 8 to 5
+    #now 12-12, did this in a different part of the code
     flask.session["begin_time"] = interpret_time("9am")
     flask.session["end_time"] = interpret_time("5pm")
 
@@ -369,14 +368,18 @@ def cal_sort_key( cal ):
 def list_events():
   #Despite the possibly misleading function name, this function serves only to
   #get the calendar ids of the calendars whose checkboxes were filled prior to user submission
-  #using the submit button. The result, stored in a session variable, is 
+  #using the submit button. The result, stored in a session variable, is a list.
   flask.session["selected"] = request.form.getlist("calcheck")
-  
+  #choose2 is called to update index.html with new content retrieved here, to be displayed below what 
+  #was already there
   return flask.redirect(flask.url_for("choose2"))
-  #return flask.redirect("index.html")
+  
 
 
 def get_events(service):
+  This function actually retrieves the events themselves. This includes id and events with descriptions.
+  Start and end times/dates are retrieved and set here to be used in future computations, which are not
+  performed here in get_events.
 
 
   cal_list = flask.session["selected"]
@@ -391,11 +394,19 @@ def get_events(service):
   
 
   for ids in cal_list:
+    #Gets the events for an individual calendar. This loop loops through the SELECTED calendars and gets the events in each.
+    #this variable "events" is only the list of events in the current calendar in this iteration of the loop.
     events = service.events().list(calendarId=ids).execute()["items"]
     #eve_list.append(events)
     # app.logger.debug("calendar events")
     
+    #cmp_times, the function that actually performs the comparisons and computations to get results, is called here
+    #using the events in the current calendar and start and end date/times defined earlier in get_events. The result of the call
+    #to get_times is stored here, and contains the events to display as busy times.
     result = cmp_times(events, startdate, enddate)
+    #eve_list is a list of dictionaries. Each dictionary represents one of the selected calendar and stores all of the events
+    #in that calendar which qualify as busy times. The list as a whole (eve_list) contains all of the selected calendars and the busy 
+    #times for each. This is because more than one calendar can be selected to display busy times for.
     eve_list.append(
       {
         "id": ids,
@@ -408,35 +419,53 @@ def get_events(service):
 
 
 
-
+  #get_events is called in choose2 to display results on webpage
   return eve_list
 
 def cmp_times(events, starttime, endtime):
+  #list that will contain busy events
   busylist = []
+  #return "no events" if the list of all events passed to cmp_times is empty(the first parameter)
   if events==[]:
     return "no events"
+  
   for event in events:
+    #only account for events that are not transparent in calculating busy times
     if "transparency" not in event:
       if "date" in event["start"]:
+        #what the event is 
         summary = event["summary"]
+        #event begin time
         eventBegin = event["start"]["date"] + "00:00:00" + starttime[19:]
+        #event end time
         eventEnd = event["end"]["date"] + "23:59:00" + endtime[19:]
 
 
       else:
+        #what the event is
         summary = event["summary"]
+        #event begin time
         eventBegin = event["start"]["dateTime"]
+        #event end time
         eventEnd = event["end"]["dateTime"]
+      #three possible cases for events that should be included
 
+      #if event starts after the start of the selected time range, and ends after the end time of the range
       r1 = (eventBegin >= starttime) and (eventEnd < endtime)
+      #if event begins before the start time but ends after the start time, making it so there's some busy time relevant to the event
       r2 = (eventBegin < starttime) and (eventEnd > starttime)
+      #if event begins before the end time but ends after the end time
       r3 = (eventBegin < endtime) and (eventEnd > endtime)
 
+      #if any of these three booleans evaluate to true, they should be included as busy times.
       if (r1 or r2 or r3):
+        #sum(name of event), start time for the event, end time for the event stored in a dictionary and displayed on the webpage as the 
+        #same key:value pairs
         event = {"sum":summary, "start":eventBegin, "end": eventEnd}
+        #add each dictionary to the list of busy times
         busylist.append(event)
 
-
+  #return the list of busy times, the function get_times uses this returned list to eventually display on the webpage
   return busylist
 
 
