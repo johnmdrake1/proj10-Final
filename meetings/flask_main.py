@@ -377,9 +377,9 @@ def list_events():
 
 
 def get_events(service):
-  This function actually retrieves the events themselves. This includes id and events with descriptions.
-  Start and end times/dates are retrieved and set here to be used in future computations, which are not
-  performed here in get_events.
+  # This function actually retrieves the events themselves. This includes id and events with descriptions.
+  # Start and end times/dates are retrieved and set here to be used in future computations, which are not
+  # performed here in get_events.
 
 
   cal_list = flask.session["selected"]
@@ -431,6 +431,7 @@ def cmp_times(events, starttime, endtime):
   
   for event in events:
     #only account for events that are not transparent in calculating busy times
+
     if "transparency" not in event:
       if "date" in event["start"]:
         #what the event is 
@@ -464,6 +465,9 @@ def cmp_times(events, starttime, endtime):
         event = {"sum":summary, "start":eventBegin, "end": eventEnd}
         #add each dictionary to the list of busy times
         busylist.append(event)
+
+    else:
+      return "no events"
 
   #return the list of busy times, the function get_times uses this returned list to eventually display on the webpage
   return busylist
