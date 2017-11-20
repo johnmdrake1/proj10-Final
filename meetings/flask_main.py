@@ -385,7 +385,9 @@ def get_events(service):
   cal_list = flask.session["selected"]
   eve_list = []
   starttime = arrow.get(flask.session['begin_time']).time().isoformat()
+  app.logger.debug(starttime)
   endtime = arrow.get(flask.session['end_time']).time().isoformat()
+  app.logger.debug(endtime)
   begin_date = flask.session["begin_date"]
   end_date = flask.session["end_date"]
   startdate = begin_date[:11] + starttime + begin_date[19:]
@@ -450,6 +452,9 @@ def cmp_times(events, starttime, endtime):
         #event end time
         eventEnd = event["end"]["dateTime"]
       #three possible cases for events that should be included
+      app.logger.debug(starttime)
+      app.logger.debug(endtime)
+      app.logger.debug(eventBegin)
 
       #if event starts after the start of the selected time range, and ends after the end time of the range
       r1 = (eventBegin >= starttime) and (eventEnd < endtime)
