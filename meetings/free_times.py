@@ -63,14 +63,43 @@ def freetimes(busytimes, starttime, endtime):
 	# Calculate free times based on the time blocks of potential free time, and the busy times/events that block and prevent the possibility
 	# of a time being available.
 	free_times = []
-
-	#subtract free blocks from busy times
-	for block in free_times:
-		for event in busytimes:
-
-
-
 	free_blocks = list_freeblocks(starttime, endtime)
 	app.logger.debug(free_blocks)
+
+	#subtract free blocks from busy times
+	if busytimes == []:
+		app.logger.debug("all time is free(case a or e for every day)")
+		free_times = free_blocks
+		return free_times
+
+
+
+	else:
+		for event in busytimes:
+			app.logger.debug("Start outer loop")
+			busy_start = arrow.get(event['start'])
+			busy_end = arrow.get(event['end'])
+			for block in free_blocks:
+				block_start = arrow.get(block['start'])
+				block_end = arrow.get(block['end'])
+				if (busy_start <= block_start) and (busy_end >= block_end):
+					app.logger.debug("no busy time on a day")
+					app.logger.debug(busy_start)
+					app.logger.debug(block_start)
+				elif (busy_start <= block_start) and (busy_end < block_end):
+					
+
+	# for block in free_times:
+	# 	for event in busytimes:
+	# 		if event['start'] < block['start'] and event['end'] < block['start']:
+	# 			isfree = True
+	# 		elif event['start'] > block['start'] and event['start'] < block['end']:
+	# 			isfree = False
+	# 		if isfree = True:
+	# 			free_times.append(block)
+
+
+
+	
 
 	return None
