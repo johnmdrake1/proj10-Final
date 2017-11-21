@@ -20,6 +20,9 @@ import httplib2   # used in oauth2 flow
 # Google API for services 
 from apiclient import discovery
 
+#new free times file
+from free_times import list_freeblocks
+
 ###
 # Globals
 ###
@@ -424,6 +427,8 @@ def get_events(service):
     #using the events in the current calendar and start and end date/times defined earlier in get_events. The result of the call
     #to get_times is stored here, and contains the events to display as busy times.
     result = cmp_times(events, startdate, enddate)
+
+    free_times = list_freeblocks(startdate, enddate)
     #eve_list is a list of dictionaries. Each dictionary represents one of the selected calendar and stores all of the events
     #in that calendar which qualify as busy times. The list as a whole (eve_list) contains all of the selected calendars and the busy 
     #times for each. This is because more than one calendar can be selected to display busy times for.
@@ -478,12 +483,15 @@ def cmp_times(events, starttime, endtime):
         eventBegin = event["start"]["dateTime"]
         eventBegindate = arrow.get(eventBegin).date()
         eventBegintime = arrow.get(eventBegin).time()
+
         app.logger.debug(eventBegin)
         app.logger.debug(eventBegindate)
         app.logger.debug(eventBegintime)
         #event end time
         eventEnd = event["end"]["dateTime"]
+        #arrow object for event end date only
         eventEnddate = arrow.get(eventEnd).date()
+        #arrow object for event end time only
         eventEndtime = arrow.get(eventEnd).time()
         app.logger.debug(eventEnd)
         app.logger.debug(eventEnddate)
@@ -494,13 +502,14 @@ def cmp_times(events, starttime, endtime):
       # app.logger.debug(eventBegin)
 
       #if event starts after the start of the selected time range, and ends after the end time of the range
+      #added 2 new booleans on each. It now checks for date and time independently, as seperate arrow objects.
       r1 = ((eventBegindate >= arsdate) and (eventEnddate <= aredate)) and ((eventBegintime >= arstime) and (eventEndtime <= aretime))
       #r1 = (eventBegin >= starttime) and (eventEnd < endtime)
       #if event begins before the start time but ends after the start time, making it so there's some busy time relevant to the event
       r2 = ((eventBegindate <= arsdate) and (eventEnddate >= arsdate)) and ((eventBegintime <= arstime) and (eventEndtime >= arstime))
       #r2 = (eventBegin < starttime) and (eventEnd > starttime)
       #if event begins before the end time but ends after the end time
-      r3 = (eventBegindate <= aredate) and (eventEnddate >= aredate) and ((eventBegintime <= aretime) and (eventEndtime >= aretime))
+      r3 = ((eventBegindate <= aredate) and (eventEnddate >= aredate)) and ((eventBegintime <= aretime) and (eventEndtime >= aretime))
       #r3 = (eventBegin < endtime) and (eventEnd > endtime)
 
       #if any of these three booleans evaluate to true, they should be included as busy times.
