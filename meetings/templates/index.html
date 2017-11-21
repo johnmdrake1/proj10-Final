@@ -116,7 +116,7 @@
                 {% if event.id == cal.id %}
                   {% for key in event.events %}
                   <!-- How the events are displayed on the webpage -->
-                    {{ key.sum }}  Start: {{ key.start | fmtdate }} {{ key.start | fmttime }}  End: {{ key.end | fmtdate }} {{key.end | fmttime}}
+                    Busy Times: {{ key.sum }}  Start: {{ key.start | fmtdate }} {{ key.start | fmttime }}  End: {{ key.end | fmtdate }} {{key.end | fmttime}}
                   {% endfor %}
                 {% endif %}
               {% endfor %}

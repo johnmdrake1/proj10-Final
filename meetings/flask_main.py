@@ -389,11 +389,16 @@ def get_events(service):
 
   cal_list = flask.session["selected"]
   eve_list = []
-  starttime = arrow.get(flask.session['begin_time']).time().isoformat()
-  # starttime = arrow.get(flask.session['start_clock']).time().isoformat()
+  #starttime = arrow.get(flask.session['begin_time']).time().isoformat()
+  app.logger.debug(flask.session['start_clock'])
+  # test = flask.session['start_clock'] + ':00'
+  #app.logger.debug(test)
+  #start time from user input
+  starttime = flask.session['start_clock']
   app.logger.debug(starttime)
-  endtime = arrow.get(flask.session['end_time']).time().isoformat()
-  # endtime = arrow.get(flask.session['end_clock']).time().isoformat()
+  #endtime = arrow.get(flask.session['end_time']).time().isoformat()
+  #end time from user input
+  endtime = flask.session['end_clock']
   app.logger.debug(endtime)
   #start clock needs to be the new value for start_time and end_time
   # app.logger.debug(flask.session['start_clock'])
@@ -489,11 +494,14 @@ def cmp_times(events, starttime, endtime):
       # app.logger.debug(eventBegin)
 
       #if event starts after the start of the selected time range, and ends after the end time of the range
-      r1 = (eventBegin >= starttime) and (eventEnd < endtime)
+      r1 = ((eventBegindate >= arsdate) and (eventEnddate <= aredate)) and ((eventBegintime >= arstime) and (eventEndtime <= aretime))
+      #r1 = (eventBegin >= starttime) and (eventEnd < endtime)
       #if event begins before the start time but ends after the start time, making it so there's some busy time relevant to the event
-      r2 = (eventBegin < starttime) and (eventEnd > starttime)
+      r2 = ((eventBegindate <= arsdate) and (eventEnddate >= arsdate)) and ((eventBegintime <= arstime) and (eventEndtime >= arstime))
+      #r2 = (eventBegin < starttime) and (eventEnd > starttime)
       #if event begins before the end time but ends after the end time
-      r3 = (eventBegin < endtime) and (eventEnd > endtime)
+      r3 = (eventBegindate <= aredate) and (eventEnddate >= aredate) and ((eventBegintime <= aretime) and (eventEndtime >= aretime))
+      #r3 = (eventBegin < endtime) and (eventEnd > endtime)
 
       #if any of these three booleans evaluate to true, they should be included as busy times.
       if (r1 or r2 or r3):
