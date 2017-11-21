@@ -219,8 +219,13 @@ def setrange():
       request.form.get('daterange')))
     daterange = request.form.get('daterange')
     flask.session['daterange'] = daterange
+    #time values are got here, need to get them to cmp_times
     start_clock = request.form.get('start_clock')
+    app.logger.debug(start_clock)
     end_clock = request.form.get('end_clock')
+    app.logger.debug(end_clock)
+    flask.session['start_clock'] = start_clock
+    flask.session['end_clock'] = end_clock
     daterange_parts = daterange.split()
     flask.session['begin_date'] = interpret_date(daterange_parts[0])
     flask.session['end_date'] = interpret_date(daterange_parts[2])
@@ -385,13 +390,21 @@ def get_events(service):
   cal_list = flask.session["selected"]
   eve_list = []
   starttime = arrow.get(flask.session['begin_time']).time().isoformat()
+  # starttime = arrow.get(flask.session['start_clock']).time().isoformat()
   app.logger.debug(starttime)
   endtime = arrow.get(flask.session['end_time']).time().isoformat()
+  # endtime = arrow.get(flask.session['end_clock']).time().isoformat()
   app.logger.debug(endtime)
+  #start clock needs to be the new value for start_time and end_time
+  # app.logger.debug(flask.session['start_clock'])
   begin_date = flask.session["begin_date"]
+  app.logger.debug(begin_date)
   end_date = flask.session["end_date"]
+  app.logger.debug(end_date)
   startdate = begin_date[:11] + starttime + begin_date[19:]
+  app.logger.debug(startdate)
   enddate = end_date[:11] + endtime + end_date[19:]
+  app.logger.debug(enddate)
   app.logger.debug("DATES {}, {}".format(startdate, enddate))
   
 
@@ -427,6 +440,15 @@ def get_events(service):
 def cmp_times(events, starttime, endtime):
   #list that will contain busy events
   busylist = []
+  arsdate = arrow.get(starttime).date()
+  app.logger.debug(arsdate)
+  aredate = arrow.get(endtime).date()
+  app.logger.debug(aredate)
+  arstime = arrow.get(starttime).time()
+  app.logger.debug(arstime)
+  aretime = arrow.get(endtime).time()
+  app.logger.debug(aretime)
+
   #return "no events" if the list of all events passed to cmp_times is empty(the first parameter)
   if events==[]:
     return "no events"
@@ -449,12 +471,22 @@ def cmp_times(events, starttime, endtime):
         summary = event["summary"]
         #event begin time
         eventBegin = event["start"]["dateTime"]
+        eventBegindate = arrow.get(eventBegin).date()
+        eventBegintime = arrow.get(eventBegin).time()
+        app.logger.debug(eventBegin)
+        app.logger.debug(eventBegindate)
+        app.logger.debug(eventBegintime)
         #event end time
         eventEnd = event["end"]["dateTime"]
+        eventEnddate = arrow.get(eventEnd).date()
+        eventEndtime = arrow.get(eventEnd).time()
+        app.logger.debug(eventEnd)
+        app.logger.debug(eventEnddate)
+        app.logger.debug(eventEndtime)
       #three possible cases for events that should be included
-      app.logger.debug(starttime)
-      app.logger.debug(endtime)
-      app.logger.debug(eventBegin)
+      # app.logger.debug(starttime)
+      # app.logger.debug(endtime)
+      # app.logger.debug(eventBegin)
 
       #if event starts after the start of the selected time range, and ends after the end time of the range
       r1 = (eventBegin >= starttime) and (eventEnd < endtime)
@@ -476,6 +508,10 @@ def cmp_times(events, starttime, endtime):
 
   #return the list of busy times, the function get_times uses this returned list to eventually display on the webpage
   return busylist
+
+
+
+
 
 
 
