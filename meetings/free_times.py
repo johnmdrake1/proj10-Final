@@ -59,8 +59,18 @@ def list_freeblocks(starttime, endtime):
 
 
 
-def freetimes(busytimes, freeblocks):
+def freetimes(busytimes, starttime, endtime):
 	# Calculate free times based on the time blocks of potential free time, and the busy times/events that block and prevent the possibility
 	# of a time being available.
+	free_times = []
+
+	#subtract free blocks from busy times
+	for block in free_times:
+		for event in busytimes:
+
+
+
+	free_blocks = list_freeblocks(starttime, endtime)
+	app.logger.debug(free_blocks)
 
 	return None
