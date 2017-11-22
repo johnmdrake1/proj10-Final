@@ -21,7 +21,7 @@ import httplib2   # used in oauth2 flow
 from apiclient import discovery
 
 #new free times file
-from free_times import list_freeblocks
+from free_times import list_freeblocks, freetimes
 
 ###
 # Globals
@@ -87,6 +87,7 @@ def choose2():
     app.logger.debug("Returned from get_gcal_service")
     flask.g.calendars = list_calendars(gcal_service)
     flask.g.events = get_events(gcal_service)
+    flask.g.free = flask.session['free']
     
     return render_template('index.html')
 
@@ -427,20 +428,54 @@ def get_events(service):
     #using the events in the current calendar and start and end date/times defined earlier in get_events. The result of the call
     #to get_times is stored here, and contains the events to display as busy times.
     result = cmp_times(events, startdate, enddate)
+    #get free blocks
+    freeblocks = list_freeblocks(startdate, enddate)
 
-    free_times = list_freeblocks(startdate, enddate)
+    #get free times
+    #pre-output
+    freetimeslist = []
+    #output list
+    finalfreelist = []
+
+    #if no busy events at all, FREE TIME ALL DAY 
+    if result == []:
+        freetimeslist = freeblocks
+
+
+
+    # iterate through each free block 
+    for block in freeblocks:
+        #get busy events in that block
+        busyevents = cmp_times(events, block['start'], block['end'])
+        #getting the free times in that block
+        #call freetimes, set result to freetimes_list
+        freetimes_list = freetimes(block, busyevents)
+        #if there are free times(list not empty), add them to the list of free times
+        if freetimes_list != []:
+            for time in freetimes_list:
+                freetimeslist.append(time)
+
     #eve_list is a list of dictionaries. Each dictionary represents one of the selected calendar and stores all of the events
     #in that calendar which qualify as busy times. The list as a whole (eve_list) contains all of the selected calendars and the busy 
     #times for each. This is because more than one calendar can be selected to display busy times for.
+    #
+
+    #gets all free times for that calendar and adds them to a "final" list (to be iterated through in jinja)
+    finalfreelist.append({"id": id, "free_times": freetimeslist})
+
+
+
+
+
     eve_list.append(
-      {
+    {
         "id": ids,
         "events": result
-      })
+    })
 
     # app.logger.debug(events)
     # eve_list.append(events)
-  app.logger.debug(eve_list)
+    app.logger.debug(eve_list)
 
 
 
