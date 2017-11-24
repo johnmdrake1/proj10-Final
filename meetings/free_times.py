@@ -121,32 +121,13 @@ def freetimes(freeblock, busytimes):
 
 
 
-    # else:
-    #   for event in busytimes:
-    #       app.logger.debug("Start outer loop")
-    #       busy_start = arrow.get(event['start'])
-    #       busy_end = arrow.get(event['end'])
-    #       for block in free_blocks:
-    #           block_start = arrow.get(block['start'])
-    #           block_end = arrow.get(block['end'])
-    #           if (busy_start <= block_start) and (busy_end >= block_end):
-    #               app.logger.debug("no busy time on a day")
-    #               app.logger.debug(busy_start)
-    #               app.logger.debug(block_start)
-    #           elif (busy_start <= block_start) and (busy_end < block_end):
-
-
-    # for block in free_times:
-    #   for event in busytimes:
-    #       if event['start'] < block['start'] and event['end'] < block['start']:
-    #           isfree = True
-    #       elif event['start'] > block['start'] and event['start'] < block['end']:
-    #           isfree = False
-    #       if isfree = True:
-    #           free_times.append(block)
 
 
 
-    
 
-    # return None
+
+
+#newline at end of file?
+
+
+
