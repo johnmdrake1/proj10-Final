@@ -74,6 +74,9 @@ def freetimes(freeblock, busytimes):
 
     app.logger.debug("FreeBLock{}:".format(freeblock))
     app.logger.debug("Busy{}:".format(busytimes))
+    if freeblock == []:
+        freetimes_in_block = []
+        return freetimes_in_block
 
     freetimes_in_block = []
     freeblockstart = freeblock['start']

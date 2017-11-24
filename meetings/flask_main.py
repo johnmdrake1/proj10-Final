@@ -449,6 +449,7 @@ def get_events(service):
         #get busy events in that block
         busyevents = cmp_times(events, block['start'], block['end'])
         #getting the free times in that block
+        app.logger.debug(busyevents)
         #call freetimes, set result to freetimes_list
         freetimes_list = freetimes(block, busyevents)
         #if there are free times(list not empty), add them to the list of free times
@@ -491,13 +492,13 @@ def cmp_times(events, starttime, endtime):
   #list that will contain busy events
   busylist = []
   arsdate = arrow.get(starttime).date()
-  app.logger.debug(arsdate)
+  # app.logger.debug(arsdate)
   aredate = arrow.get(endtime).date()
-  app.logger.debug(aredate)
+  # app.logger.debug(aredate)
   arstime = arrow.get(starttime).time()
-  app.logger.debug(arstime)
+  # app.logger.debug(arstime)
   aretime = arrow.get(endtime).time()
-  app.logger.debug(aretime)
+  # app.logger.debug(aretime)
 
   #return "no events" if the list of all events passed to cmp_times is empty(the first parameter)
   if events==[]:
@@ -529,18 +530,18 @@ def cmp_times(events, starttime, endtime):
         eventBegindate = arrow.get(eventBegin).date()
         eventBegintime = arrow.get(eventBegin).time()
 
-        app.logger.debug(eventBegin)
-        app.logger.debug(eventBegindate)
-        app.logger.debug(eventBegintime)
+        # app.logger.debug(eventBegin)
+        # app.logger.debug(eventBegindate)
+        # app.logger.debug(eventBegintime)
         #event end time
         eventEnd = event["end"]["dateTime"]
         #arrow object for event end date only
         eventEnddate = arrow.get(eventEnd).date()
         #arrow object for event end time only
         eventEndtime = arrow.get(eventEnd).time()
-        app.logger.debug(eventEnd)
-        app.logger.debug(eventEnddate)
-        app.logger.debug(eventEndtime)
+        # app.logger.debug(eventEnd)
+        # app.logger.debug(eventEnddate)
+        # app.logger.debug(eventEndtime)
       #three possible cases for events that should be included
       # app.logger.debug(starttime)
       # app.logger.debug(endtime)
