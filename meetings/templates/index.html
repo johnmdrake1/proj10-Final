@@ -109,7 +109,7 @@
 	   {{ cal.summary }} <input type="checkbox" name="calcheck" value={{cal.id}} /> 
           </div>
          {% if loop.index is divisibleby 1 %}
-         <div class="row">
+         <!-- <div class="row"> -->
           <!-- Displays events properly -->
             {% if g.events is defined %}
               {% for event in g.events %}
@@ -118,7 +118,7 @@
                   {% for key in event.events %}
                   <!-- How the events are displayed on the webpage -->
                     <div class="row">
-                     {{ key.sum }}  Start: {{ key.start | fmtdate }} {{ key.start | fmttime }}  End: {{ key.end | fmtdate }} {{key.end | fmttime}}
+                     Conflict: {{ key.sum }}  Starts: {{ key.start | fmtdate }} {{ key.start | fmttime }}  Ends: {{ key.end | fmtdate }} {{key.end | fmttime}}
                    </div>
                   {% endfor %}
                 {% endif %}
@@ -134,7 +134,7 @@
                       <!-- Displaying Busy Events on the page -->
                           <div class="row">
 
-                           BEGINS: {{ event.start| fmtdate }} {{ event.start | fmttime }} ENDS: {{event.end | fmtdate}} {{event.end | fmttime}}
+                           Free time on {{ event.start| fmtdate }} from {{ event.start | fmttime }} to {{event.end | fmttime}}
 
                           </div>
                         {% endfor %}
@@ -143,7 +143,7 @@
             {% endif %}
   {% endfor %}
   
-</div>
+<!-- </div> -->
 
 
 
