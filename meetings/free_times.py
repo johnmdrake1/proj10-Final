@@ -79,7 +79,7 @@ def freetimes(freeblock, busytimes):
     freeblockstart = freeblock['start']
     freeblockend = freeblock['end']
     for event in busytimes:
-        app.logger.debug("placeholder")
+        #app.logger.debug("placeholder")
 
         eventstart = event['start']
         eventend = event['end']

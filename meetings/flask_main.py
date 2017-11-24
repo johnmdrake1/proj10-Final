@@ -439,7 +439,8 @@ def get_events(service):
 
     #if no busy events at all, FREE TIME ALL DAY 
     if result == []:
-        freetimeslist = freeblocks
+        app.logger.debug("FREETIMESLIST IS EMPTY? NO BUSY EVENTS??")
+        freetimes_list = freeblocks
 
 
 
@@ -461,7 +462,7 @@ def get_events(service):
     #
 
     #gets all free times for that calendar and adds them to a "final" list (to be iterated through in jinja)
-    finalfreelist.append({"id": id, "free_times": freetimeslist})
+    finalfreelist.append({"id": ids, "free_times":freetimeslist})
 
 
 
@@ -479,6 +480,10 @@ def get_events(service):
 
 
 
+
+
+  #final list
+  flask.session['free'] = finalfreelist
   #get_events is called in choose2 to display results on webpage
   return eve_list
 
@@ -497,6 +502,11 @@ def cmp_times(events, starttime, endtime):
   #return "no events" if the list of all events passed to cmp_times is empty(the first parameter)
   if events==[]:
     return "no events"
+
+
+
+
+
   
   for event in events:
     #only account for events that are not transparent in calculating busy times
