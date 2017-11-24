@@ -484,6 +484,8 @@ def get_events(service):
 
 
   #final list
+
+  #note:this session object may cause bugs, remove if so.
   flask.session['free'] = finalfreelist
   #get_events is called in choose2 to display results on webpage
   return eve_list

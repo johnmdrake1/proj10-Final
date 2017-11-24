@@ -76,9 +76,9 @@ def freetimes(freeblock, busytimes):
     app.logger.debug("Busy{}:".format(busytimes))
 
     #added this to handle test case with empty freeblock, don't believe it broke anything but I can't be sure
-    if freeblock == []:
-        freetimes_in_block = []
-        return freetimes_in_block
+    # if freeblock == []:
+    #     freetimes_in_block = []
+    #     return freetimes_in_block
 
     freetimes_in_block = []
     freeblockstart = freeblock['start']
