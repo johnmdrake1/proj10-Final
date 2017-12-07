@@ -4,9 +4,14 @@ from flask import request
 from flask import url_for
 import uuid
 import ast
+import numpy
 import random
+# from numpy import random as rd
+
 import string
 import sys
+
+
 
 import json
 import logging
@@ -15,10 +20,15 @@ import logging
 import pymongo
 from pymongo import MongoClient
 
+
+
 # Date handling 
 import arrow # Replacement for datetime, based on moment.js
 # import datetime # But we still need time
 from dateutil import tz  # For interpreting local times
+
+print (random.__file__)
+
 
 
 # OAuth2  - Google library implementation for convenience
@@ -452,6 +462,8 @@ def get_events(service):
   enddate = end_date[:11] + endtime + end_date[19:]
   app.logger.debug(enddate)
   app.logger.debug("DATES {}, {}".format(startdate, enddate))
+  if len(cal_list) < 1:
+    finalfreelist = ["no events"]
   
 
   for ids in cal_list:
@@ -523,7 +535,11 @@ def get_events(service):
   #final list
 
   #note:this session object may cause bugs, remove if so.
-  flask.session['free'] = finalfreelist
+  if len(finalfreelist) > 0:
+    flask.session['free'] = finalfreelist
+  
+  
+  
   #get_events is called in choose2 to display results on webpage
   return eve_list
 
@@ -613,40 +629,42 @@ def cmp_times(events, starttime, endtime):
 
 
 
-  @app.route("/creation", methods=['POST'])
-  def creation():
-    #new meeting id
-    meeting_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-    arranger_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-    flask.session['meet'] = {}
+@app.route("/creation", methods=['POST'])
+def creation():
+#new meeting id
+  meeting_id = ''.join(random.choices(
+      string.ascii_uppercase + string.digits, k=10))
+  arranger_code = ''.join(random.choices(
+      string.ascii_uppercase + string.digits, k=8))
+  flask.session['meet'] = {}
 
-    times = request.form.getlist('preferred')
-    flask.session['meet']['meeting_value'] = meeting_id
-    flask.session['meet']['masterkey'] = arranger_code
-    flask.session['meet']['confirmed'] = False
-    flask.session['meet']['beginrange'] = flask.session['begin_date']
-    flask.session['meet']['beginrange_time'] = flask.session['start_clock']
-    flask.session['meet']['endrange'] = flask.session['end_date']
-    flask.session['meet']['endrange_time'] = flask.session['end_clock']
-    flask.session['meet']['times'] = []
-    for i in range(len(meeting_times)):
-      time = times[i]
-      #FIXME (concatenation of strings-possibility for bugs)
-      start = time[11:36]
-      end = time[47:72]
-      flask.session['meet']['times'].append({
-        "name": str(i), "start": start, "end": end, "responses": []
-        })
+  times = request.form.getlist('preferred')
+  flask.session['meet']['meeting_value'] = meeting_id
+  flask.session['meet']['masterkey'] = arranger_code
+  flask.session['meet']['confirmed'] = False
+  flask.session['meet']['beginrange'] = flask.session['begin_date']
+  flask.session['meet']['beginrange_time'] = flask.session['start_clock']
+  flask.session['meet']['endrange'] = flask.session['end_date']
+  flask.session['meet']['endrange_time'] = flask.session['end_clock']
+  flask.session['meet']['times'] = []
+  for i in range(len(meeting_times)):
+    time = times[i]
+    #FIXME (concatenation of strings-possibility for bugs)
+    start = time[11:36]
+    end = time[47:72]
+    flask.session['meet']['times'].append({
+      "name": str(i), "start": start, "end": end, "responses": []
+      })
 
-    info = {'meeting': flask.session['meet']}
-
-
-    collection.insert(info)
-
+  info = {'meeting': flask.session['meet']}
 
 
+  collection.insert(info)
 
-    return render_template('index.html')
+
+
+
+  return render_template('index.html')
 
 
 

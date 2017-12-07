@@ -59,7 +59,7 @@ Let's get started:
     Start time:
     <input type="time" name="start_clock" value="00:00:00">
 
-  </select>
+<!--   </select> -->
 
     End time:
     <input type="time" name="end_clock" value="00:00:00">
@@ -91,6 +91,7 @@ Let's get started:
 
 <br /><input type="submit" value="Choose" />
 </form>
+
 
     <!--
     Show the calendar list (if we have it).  This will need to be turned into
@@ -127,7 +128,8 @@ Let's get started:
             {% endif %}
          {% endif %}
          <!-- New Stuff -->
-         <form action="/creation" method=post>
+       </form>
+         <form action="/creation" method="post">
             {% if g.free is defined %}
                 {% for time in g.free %}
                     {% if time.id == cal.id %}
@@ -144,8 +146,9 @@ Let's get started:
                 {% endfor %}
 
             {% endif %}
+            
   {% endfor %}
-  <button type="submit" name="meetbutton">New Meeting</button>
+  <button type="submit" name="preferred">New Meeting</button>
   
 <!-- </div> -->
 </form>
@@ -160,7 +163,7 @@ Let's get started:
 
 
 
-</form>
+<!-- </form> -->
     
 
   </div>  <!-- container (for bootstrap) -->

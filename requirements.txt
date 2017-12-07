@@ -7,4 +7,5 @@ urllib3
 nose
 gunicorn
 pymongo
+numpy
 
