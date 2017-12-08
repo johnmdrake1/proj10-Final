@@ -2,6 +2,8 @@ import flask
 from flask import render_template
 from flask import request
 from flask import url_for
+import os
+
 import uuid
 import ast
 import numpy
@@ -632,10 +634,8 @@ def cmp_times(events, starttime, endtime):
 @app.route("/creation", methods=['POST'])
 def creation():
 #new meeting id
-  meeting_id = ''.join(random.choices(
-      string.ascii_uppercase + string.digits, k=10))
-  arranger_code = ''.join(random.choices(
-      string.ascii_uppercase + string.digits, k=8))
+  meeting_id = str(os.urandom(11))
+  arranger_code = str(os.urandom(8))
   flask.session['meet'] = {}
 
   times = request.form.getlist('preferred')
@@ -647,7 +647,7 @@ def creation():
   flask.session['meet']['endrange'] = flask.session['end_date']
   flask.session['meet']['endrange_time'] = flask.session['end_clock']
   flask.session['meet']['times'] = []
-  for i in range(len(meeting_times)):
+  for i in range(len(times)):
     time = times[i]
     #FIXME (concatenation of strings-possibility for bugs)
     start = time[11:36]
@@ -664,7 +664,68 @@ def creation():
 
 
 
-  return render_template('index.html')
+  # return render_template('index.html')
+  return flask.redirect(flask.url_for('meeting', meeting_id=meeting_id, arranger_code=arranger_code))
+
+@app.route("/meeting/<string:meeting_id>/<string:arranger_code>")
+def meeting(meeting_id, arranger_code):
+  flask.session['meeting_value'] = meeting_id
+  flask.session['masterkey'] = arranger_code
+  flask.session['user_link'] = flask.url_for('user_view', meeting_id=flask.session['meeting_value'])
+  flask.session['admin_link'] = flask.url_for("admin_view", meeting_id=flask.session['meeting_value'], arranger_code=flask.session['masterkey'])
+  return render_template('meeting.html')
+
+@app.route("/user_view/<string:meeting_id>")
+def user_view(meeting_id):
+  flask.session['times'] = []
+  for meeting in collection.find():
+    if meeting['meeting']['meeting_value'] == meeting_id:
+      if meeting['meeting']['confirmed'] != False:
+        return flask.redirect(flask.url_for('final', meeting_id=meeting_id))
+      for time in meeting['meeting']['times']:
+        flask.session['times'].append({
+          "start":time['start'],
+          "end":time['end'],
+          "responses":time['responses']
+          })
+        flask.session['meeting_value'] = meeting['meeting']['meeting_value']
+        flask.session['begin_date'] = meeting['meeting']['beginrange']
+        flask.session['begin_time'] = meeting['meeting']['beginrange_time']
+        flask.session['end_date'] = meeting['meeting']['endrange']
+        flask.session['end_time'] = meeting['meeting']['endrange_time']
+        return render_template('user_view.html')
+  return render_template('incorrectid.html')
+
+@app.route("/admin_view/<string:meeting_id>/<string:arranger_code>")
+def admin_view(meeting_id, arranger_code):
+  flask.session['meeting_value'] = meeting_id
+  flask.session['masterkey'] = arranger_code
+  flask.session['times'] = []
+  for meeting in collection.find():
+    if meeting['meeting']['meeting_value'] == meeting_id:
+      if meeting['meeting']['confirmed'] != False:
+        return flask.redirect(flask.url_for('final', meeting_id=meeting_id))
+      if meeting['meeting']['masterkey'] == arranger_code:
+        for time in meeting['meeting']['times']:
+          flask.session['times'].append({
+            "start":time['start'],
+            "end":time['end'],
+            "responses":time['responses']
+            })
+        return render_template('admin_view.html')
+  return render_template('incorrectid.html')
+
+@app.route("/final/<string:meeting_id>")
+def final(meeting_id):
+  flask.session['meeting_value'] = meeting_id
+  for meeting in collection.find():
+    if meeting['meeting']['meeting_value'] == meeting_id:
+      flask.session['final_time'] = meeting['meeting']['final']
+      return render_template('final.html')
+  return render_template('incorrectid.html')
+
+
+
 
 
 
