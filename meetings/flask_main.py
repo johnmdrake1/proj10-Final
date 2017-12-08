@@ -725,7 +725,54 @@ def final(meeting_id):
   return render_template('incorrectid.html')
 
 
+@app.route("/usersetrange", methods=["post"])
+def usersetrange():
+  return flask.redirect(flask.url_for('userchoose'))
 
+@app.route("/userchoose")
+def userchoose():
+    ## We'll need authorization to list calendars 
+    ## I wanted to put what follows into a function, but had
+    ## to pull it back here because the redirect has to be a
+    ## 'return' 
+    app.logger.debug("Checking credentials for Google calendar access")
+    credentials = valid_credentials()
+    if not credentials:
+      app.logger.debug("Redirecting to authorization")
+      return flask.redirect(flask.url_for('oauth2callback'))
+
+    gcal_service = get_gcal_service(credentials)
+    app.logger.debug("Returned from get_gcal_service")
+    flask.g.calendars = list_calendars(gcal_service)
+    return render_template('user_view.html')
+
+@app.route('/userlist_events', methods=['GET','POST'])
+def userchecking():
+    interest = flask.request.form.getlist("interest")
+    flask.session["cal_ids"] = interest
+    app.logger.debug('CHECKED BOXES: {}'.format(interest)) #shows list of calendars clicked
+    return flask.redirect(flask.url_for("userchoose2"))
+
+@app.route("/userchoose2")
+def userchoose2():
+    ## We'll need authorization to list calendars 
+    ## I wanted to put what follows into a function, but had
+    ## to pull it back here because the redirect has to be a
+    ## 'return' 
+    app.logger.debug("Checking credentials for Google calendar access")
+    credentials = valid_credentials()
+    if not credentials:
+      app.logger.debug("Redirecting to authorization")
+      return flask.redirect(flask.url_for('oauth2callback'))
+
+    gcal_service = get_gcal_service(credentials)
+    app.logger.debug("Returned from get_gcal_service")
+    flask.g.calendars = list_calendars(gcal_service)
+    flask.g.events = list_events(gcal_service, flask.g.calendars)
+    
+    flask.g.free = flask.session['free']
+    
+    return render_template('user_list.html')
 
 
 
