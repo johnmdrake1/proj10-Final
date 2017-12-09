@@ -1,43 +1,39 @@
 
 
-Project 8 G-Cal free times
+Project 10-MeetMe Meeting Planner Application
 
 Author: John Drake and Michal Young
-Collaborators: I again worked with Claire Phillips and Miguel.
+Collaborators: Got some help from Claire and Miguel.
 
 Github Profile: https://github.com/johnmdrake1
 
-Repository: https://github.com/johnmdrake1/proj8-freetimes
+Repository: https://github.com/johnmdrake1/proj10-final
 
-
-NOTE: This project was copied and then modified from my project 7, located at the github repo
-https://github.com/johnmdrake1/proj7-Gcal. Much of this README is also borrowed from there, but I have made
-some notes on my additions in the present project 8. I did remove the test suite for project 7, and added the one for project 8.
-
-Another change that should be noted is proper comparisons for the TIME ranges(for busy times), as opposed to what I had in project
-7. In project 7, results were accurate in regard to date, but not in regard to the time range set to be searched each day.
-In project 7, the program treated the start and end TIMES as times on the start and end dates(meaning that everything from the 
-start time on the start date to the end time on the end date would be searched for events, and not independently for each day
-as required by project 7 specifications). My first course of action in completing project 8, and what used much of my development
-time, was fixing this issue from project 7 as time accuracy is vital for project 8 to work. I succeeded with this, and split up
-inputs for cmp_times into arrow date and time objects, and added new booleans so date and time could be compared independently of
-one another. Project 8 now searches each day's time range for busy times. I did not change my project 7 repository to 
-implement this fix there, however. As a result project 8 now searches dates and times according to spec, for both busy and
-free times!
+NOTE: Most of the most important commits in terms of my project functionality were made today, Friday December 8th. I submitted 
+credentials.ini on Canvas this morning, but made most of my commits after then.
 
 
 
-Description: A program displayed on a webpage through a running server that allows the user to select a date range and 
-time range and display busy times in that range based on events from one or more of their google calendars. The time range
-is for that time range each day, looked at independently each day. Busy times(events) for each selected calendar
-are shown next to that calendar on the page. Below this, Free times are shown. Free times count as any time block in the selected range
-that does not have any events that conflict with it.
+
+
+Description: A meeting planning application that features seperate routes and interfaces for meeting planner and meeting attendee. Information
+submitted by both parties is added to a MongoDB database on Mlab that is consistently updated until the meeting is finalized 
+by the planner. Meeting planner submits their google calendars, chooses which of their free time blocks they would like to propose
+as a possible meeting time to their potential attendees, and receives two links for the unique meeting id they have created
+(one to send to their attendees, one for the planner themself to view responses and finalize the meeting time once they are 
+satisfied with responses). When an attendee follows their respective link, they may log into the google calendar API, choose
+their relevant calendars, view their free times in their selected calendars, and choose which of the planner's proposed times they
+favor. Finally, the attendee enters their name and submits their response. 
+
+The process ends when the meeting planner uses their exclusive link to choose the proposed time they want based on attendee responses.
+Planner submits, and the meeting is finalized preventing further updates or user responses. Planner and attendee will be directed
+to a new page showing the finalized meeting time from this point forward.
 
 Instructions:
 
-For end users:
+For the meeting planner:
 Once the server is up and running, go to localhost:5000 in a web browser. Use the input boxes to select a date range
-you want to view data for. Then, select a time range you want to search each date in the date range for for busy, and free, times/events.
+you want to view available meeting times for. Then,  Then, select a time range you want to search each date in the date range for for busy, and free, times/events.
 Select the "choose" button once these steps are completed. When prompted to log in to google, do so for the account you'd
 like to view busy times for. At this point the page should be updated with some additional options, and your date and time range
 is now locked in. Here, you may select the check box next to each calendar you would like to view. Please select at least one.
@@ -47,6 +43,25 @@ of your selected calendars. These will include the name, start time, and end tim
 Below this busy time list, Free time blocks will display in the selected range. It will state which date your free time falls
 on, and when your free time starts and goes till. If there are multiple free blocks on the same day, they will
 each display on their own line. If you wish to search a different time range or different calendars, change your inputs and hit the choose and/or submit buttons again.
+
+Check the boxes next to the now-displayed free times you want to propose for a meeting, and hit the "new meeting" button
+BELOW the boxes. The next page will display a link to send to your attendees, and a unique link for you, the planner. Go to your
+planner url to view responses for each proposed time. Select whichever meeting time you prefer once you are ready and satisfied
+with the time you have allowed your attendees to respond. Click the submit button(WARNING: This will finalize your meeting,
+and no further changes can be made to it!). The next page will show your finalized meeting time. If a late respondent tries
+to follow their url, they will also see this page. You should be able to send either link at this point to anyone you wish
+to share your finalized time with.
+
+For the potential meeting attendee:
+Run the server and follow the link you received from your meeting administrator. Choose a calendar relevant to deciding on a meeting
+time. Once you have submitted this form, your free/busy times will be displayed and the meeting admin's preffered times will
+now be visible. Decide which one works best for you based on your times, enter your name in the "Name" field, and click the button
+to submit. The meeting planner will now be able to view your selections and inputs, and your name will be displayed next to the
+time you selected when the planner is viewing from their end. Once the meeting planner has finalized the meeting time based
+on you and your fellow attendees' responses, you may follow your link once more to view the time that has been decided on by the
+administrator.
+
+
 
 For developers:
 In project directory, place credentials.ini and client_id.json in the "meetings" folder.
@@ -76,6 +91,11 @@ let us know what times we have free). list_freeblocks(starttime, endtime) simply
 that starts and ends at the specified time range. freetimes(freeblock, busytimes) then takes one of these blocks, and a list
 of busy times, and uses an algorithm to compute free times based on inputs.
 
+For the final version of the MeetMe project, much has changed. The previous two versions simply displayed the busy and free times
+and added no additional functionality once this task had completed. Now, free times may be chosen once they are displayed and a meeting
+created. Two urls can be accessed from this point on, and each has its own route of html files. These redirects are handled in 
+flask_main, and several new html files are referenced here.
+
 index.html is the other primary file, and contains the webpage where inputs and outputs are passed to and from
 flask_main.py. Date, time, and a choose button are displayed at first for inputs. Then, available calendars are displayed
 on the page with checkboxes next to each, along with a submit button. When the calendars are chosen and submitted, 
@@ -83,6 +103,13 @@ events that represent busy times in the chosen range should be displayed right n
 all calendars and events. Below the busy times for each calendar, free times will be displayed that do not conflict with 
 the busy events in the time range. Seperate jinja operations are used for displaying free times. Some cosmetic changes
 have been made here as well, and should make the application look much nicer than project 7.
+
+In the final project, index.html still serves as the primary page, but will only be used when the meeting planner initializes a 
+meeting. All future usage of the application for an incomplete meeting will begin at one of two new urls, user_view.html and
+admin_view.html depending on who is accessing the program. Every time a meeting is created and initialized using index.html,
+unique urls will be displayed to access these two new html routes. The purpose of a unique url is so different meetings can
+be accessed independently. Each meeting will get its own database entry once it has been added, and the database will be modified
+whenever its unique urls are accessed.
 
 test_check.py contains a test suite that tests the two new functions in free_times.py. These are freetimes and 
 list_freeblocks. "make test" will run these tests. Note that a few were commented out for unknown errors, that were unrelated
@@ -93,10 +120,14 @@ in the actual application.
 credentials.ini and client_id.json are additional files, necessary for the project to function, that must be added manually 
 by the user to the "meetings" directory.
 
-KNOWN BUGS: None which are consistent, everything should function properly. During development, some errors, mainly about strings
+KNOWN BUGS:  During development, some errors, mainly about strings
 as list indeces, would appear for certain inputs but then work perfectly fine when submitted again with the exact same inputs.
 This could be due to a variety of factors(browser, time zone, google calendar settings) but they may be completely gone by now 
 based on some changes I made to try to fix them.
+
+New Meeting button may display twice, click lowest one. In addition to proposed times, an additional time with something
+like bad "(bad date)" "(bad time)" may appear. This can be ignored as it should not affect functionality for the times that actually
+were chosen.
 
 
 
