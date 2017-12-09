@@ -776,8 +776,8 @@ def complete():
   flask.session['final_time'] = final_time
   meeting_id = flask.session['meeting_value']
   collection.update_one(
-    {"meeting.id": meeting_id},
-    {"$set": {"meeting.final": final_time}}
+    {"meeting.meeting_value": meeting_id},
+    {"$set": {"meeting.confirmed": final_time}}
     )
   return flask.redirect(flask.url_for('final', meeting_id=meeting_id))
 
@@ -793,7 +793,7 @@ def update():
           if time == names['name']:
             update = 'meeting.times.'+time+'.responses'
             collection.update_one(
-              {"meeting.id":flask.session['meeting_value']},
+              {"meeting.meeting_value":flask.session['meeting_value']},
               {'$push': {update: name}}
               )
   return render_template('done.html')
