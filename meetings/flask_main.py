@@ -762,7 +762,7 @@ def userchoose2():
     gcal_service = get_gcal_service(credentials)
     app.logger.debug("Returned from get_gcal_service")
     flask.g.calendars = list_calendars(gcal_service)
-    flask.g.events = list_events(gcal_service, flask.g.calendars)
+    flask.g.events = list_events()
     
     flask.g.free = flask.session['free']
     
