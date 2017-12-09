@@ -782,6 +782,23 @@ def complete():
   return flask.redirect(flask.url_for('final', meeting_id=meeting_id))
 
 
+@app.route("/update", methods=["post"])
+def update():
+  selection = flask.request.form.getlist('times')
+  name = flask.request.form.get('name')
+  for meeting in collection.find():
+    if meeting['meeting']['meeting_value'] == flask.session['meeting_value']:
+      for time in selection:
+        for names in meeting['meeting']['times']:
+          if time == names['name']:
+            update = 'meeting.times.'+time+'.responses'
+            collection.update_one(
+              {"meeting.id":flask.session['meeting_value']},
+              {'$push': {update: name}}
+              )
+  return render_template('done.html')
+
+
 
 
 
