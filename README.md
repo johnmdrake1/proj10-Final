@@ -10,10 +10,13 @@ Github Profile: https://github.com/johnmdrake1
 Repository: https://github.com/johnmdrake1/proj10-final
 
 NOTE: Most of the most important commits in terms of my project functionality were made today, Friday December 8th. I submitted 
-credentials.ini on Canvas this morning, but made most of my commits after then.
+credentials.ini on Canvas this morning, but made most of my commits after then. Little functionality was available for the versions
+on github prior to Friday, but the project is significantly more complete now.
 
 
-
+Main error at this point is (bad time) showing up sometimes. I am pretty sure that it wasn't doing this as frequently a couple commits ago,
+but can't think of anything I have changed that may have caused this. Looking at my db entries on the mlab dashboard, it 
+looks like parts of the date strings may be getting cut off some times, but not every time.
 
 
 Description: A meeting planning application that features seperate routes and interfaces for meeting planner and meeting attendee. Information
@@ -129,6 +132,13 @@ New Meeting button may display twice, click lowest one. In addition to proposed 
 like bad "(bad date)" "(bad time)" may appear. This can be ignored as it should not affect functionality for the times that actually
 were chosen.
 
+Sometimes (bad date) (bad time) shows up on meeting.html for one or more of the chosen proposal times. This seems to happen at random,
+and has something to do with the datetime strings being cut off as far as I know. There seems to always be an extra "proposed time"
+with the bad date/time message, seemingly caused by an empty time being added to the list. 
+
+bad time appears most frequently on the page for a finalized meeting. Even if the proposed time displayed properly on the pages leading
+up to the final page, it will often not display correctly on final.html. Most of the time, this is for the end time of the finalized
+meeting, but sometimes it shows for begin date and/or time as well. This really does seem to happen at random, and not every time.
 
 
 
