@@ -30,9 +30,9 @@
 
 <body>
   <div class="container">
-    <h1> Meeting has been finalized. </h1>
+    <h1> Meeting has been finalized and confirmed. </h1>
 
-    <h4> Meeting Identification: {{session.meeting_value}}</h4>
+    <h4> Meeting Identification Code: {{session.meeting_value}}</h4>
 
     <h4> Finalized meeting time: </h4>
     {{session.final_time[11:36] | fmtdate}} {{session.final_time[11:36] | fmttime}} to {{session.final_time[47:72] | fmttime}}
