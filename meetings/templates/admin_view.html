@@ -30,8 +30,8 @@
 
 <body>
   <div class="container">
-    <h1> Admin View </h1>
-    <h3> Check on responses </h3>
+    <h1> Meeting Administrator View </h1>
+    <h3> Check on attendee responses </h3>
     <form action="/complete" method="post">
         {% for time in session.times %}
   <p>
@@ -44,7 +44,7 @@
     {% endfor %}
   </p>
 {% endfor %}
-<button type="submit">Make final meeting</button>
+<button type="submit">Finalize Meeting Time</button>
 </form>
   </div>
 </body>

@@ -128,7 +128,7 @@ Let's get started:
             {% endif %}
          {% endif %}
          <!-- New Stuff -->
-       </form>
+       
          <form action="/creation" method="post">
             {% if g.free is defined %}
                 {% for time in g.free %}
@@ -144,26 +144,28 @@ Let's get started:
                         {% endfor %}
                     {% endif %}
                 {% endfor %}
-
+                <button type="submit" name="preferred">New Meeting</button>
+              </form>
             {% endif %}
             
   {% endfor %}
-  <button type="submit" name="preferred">New Meeting</button>
+  <!-- <button type="submit" name="preferred">New Meeting</button> -->
   
 <!-- </div> -->
-</form>
 
 
 
-
-
-
-
-{% endif %}
 
 
 
 <!-- </form> -->
+
+{% endif %}
+
+
+</form>
+
+
     
 
   </div>  <!-- container (for bootstrap) -->

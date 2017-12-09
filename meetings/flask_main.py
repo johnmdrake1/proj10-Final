@@ -720,7 +720,7 @@ def final(meeting_id):
   flask.session['meeting_value'] = meeting_id
   for meeting in collection.find():
     if meeting['meeting']['meeting_value'] == meeting_id:
-      flask.session['final_time'] = meeting['meeting']['final']
+      flask.session['final_time'] = meeting['meeting']['confirmed']
       return render_template('final.html')
   return render_template('incorrectid.html')
 
@@ -731,10 +731,7 @@ def usersetrange():
 
 @app.route("/userchoose")
 def userchoose():
-    ## We'll need authorization to list calendars 
-    ## I wanted to put what follows into a function, but had
-    ## to pull it back here because the redirect has to be a
-    ## 'return' 
+    #Sinilar to choose, this just deals with the user view
     app.logger.debug("Checking credentials for Google calendar access")
     credentials = valid_credentials()
     if not credentials:
@@ -755,10 +752,7 @@ def userchecking():
 
 @app.route("/userchoose2")
 def userchoose2():
-    ## We'll need authorization to list calendars 
-    ## I wanted to put what follows into a function, but had
-    ## to pull it back here because the redirect has to be a
-    ## 'return' 
+    #Authorization for calendars
     app.logger.debug("Checking credentials for Google calendar access")
     credentials = valid_credentials()
     if not credentials:
@@ -773,6 +767,19 @@ def userchoose2():
     flask.g.free = flask.session['free']
     
     return render_template('user_list.html')
+
+@app.route("/complete", methods=["post"])
+def complete():
+  final_time = flask.request.form.get("times")
+  if final_time == None:
+    return flask.redirect(url_for('admin_view', meeting_id=flask.session['meeting_value'], arranger_code=flask.session['masterkey']))
+  flask.session['final_time'] = final_time
+  meeting_id = flask.session['meeting_value']
+  collection.update_one(
+    {"meeting.id": meeting_id},
+    {"$set": {"meeting.final": final_time}}
+    )
+  return flask.redirect(flask.url_for('final', meeting_id=meeting_id))
 
 
 
